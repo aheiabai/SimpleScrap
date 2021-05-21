@@ -3,11 +3,15 @@ import asyncio
 import time
 import requests
 import os
+import threading
+import logging
 
-async def main():
-    audioUrl= 'https://mp.weixin.qq.com/s/JrDd6y6Bb7Z63UCGO5mg9A'
-    # 启动一个浏览器
-    browser = await launch(headless=False,args=['--disable-infobars'])
+async def main(url):
+    logging.warning(threading.current_thread().name)
+    
+    audioUrl = url
+    # start browser and disable signal
+    browser = await launch(headless=True, handleSIGINT=False, handleSIGTERM=False, handleSIGHUP=False)
     # 创建一个页面
     page = await browser.newPage()
    
@@ -30,7 +34,7 @@ async def main():
     audioName = await page.Jeval(".audio_card_title", 'el => el.innerText')
     print(audioName)    
     
-    response = requests.get(audio, headers={'cookie': mycookie,'referer': audioUrl})
+    response = requests.get(audio, headers={'cookie': mycookie, 'referer': audioUrl})
 
     storedPath = "AudioWebPy/"
     if not os.path.exists(storedPath):
@@ -44,4 +48,9 @@ async def main():
      
     await browser.close()
     
-asyncio.get_event_loop().run_until_complete(main())
+
+if __name__ == '__main__':
+    audioUrl = 'https://mp.weixin.qq.com/s/JrDd6y6Bb7Z63UCGO5mg9A'
+    #getUrl()
+    #asyncio.get_event_loop().run_until_complete(main(getUrl()))
+    asyncio.run(main(audioUrl))

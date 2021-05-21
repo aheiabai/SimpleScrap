@@ -1,0 +1,9 @@
+AudioWeb/
+AudioWebPy/
+__pycache__/
+chrome.log
+
+static/
+
+.project
+.pydevproject

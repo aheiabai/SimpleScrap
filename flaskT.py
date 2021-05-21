@@ -5,13 +5,30 @@ Created on May 14, 2021
 '''
 
 from flask import Flask
+from flask import request
+import asyncio
+import puppeteerTest
+import threading
+import logging
+
+
 
 app = Flask(__name__)
 
-@app.route('/')
+logging.warning(threading.current_thread().name)
+    
+    
+@app.route('/', methods = ['GET', 'POST'])
 def hello():
-    return "hello world"
+    url = request.args['url']
+    
+    asyncio.run(puppeteerTest.main(url))
 
+    return url
+
+if __name__ == '__main__':
+    app.run(host='localhost', port=7878, debug=False)
+    
 
 
 
