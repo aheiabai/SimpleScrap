@@ -11,11 +11,12 @@ async def main(url):
     
     audioUrl = url
     # start browser and disable signal
-    browser = await launch(headless=True, handleSIGINT=False, handleSIGTERM=False, handleSIGHUP=False)
+    browser = await launch(headless=True, args=['--no-sandbox'], handleSIGINT=False, handleSIGTERM=False, handleSIGHUP=False)
     # 创建一个页面
     page = await browser.newPage()
    
     await page.goto(audioUrl)
+    await page.setJavaScriptEnabled(enabled=True)
     """ construct cookie """
     mycookie = ''
     cookies = await page.cookies()
@@ -26,9 +27,14 @@ async def main(url):
         print(mycookie)
         
     # 点击播放
-    time.sleep(3)
+    await page.waitForSelector('.weui-audio-btn')
     await page.click('.weui-audio-btn')
+    #await page.waitForNavigation()
+    content = await page.content()
+    with open('./static/content.html', 'w') as f:
+        f.write(content)
     
+    await page.waitForSelector('audio')
     audio = await page.Jeval('audio', 'el => el.src')
     print(audio)
     audioName = await page.Jeval(".audio_card_title", 'el => el.innerText')
